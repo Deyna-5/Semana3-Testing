@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Ingreso para Ficha Médica</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Formulario de Ingreso para Ficha Médica</h1>
+  <input type="text" id="buscarApellido" placeholder="Buscar por Apellido">
+  <button type="button" onclick="buscarPorApellido()">Buscar</button>
+  <div id="formulario">
+    <br>
+    <form>
+      <label for="rut">Rut:</label>
+      <input type="text" id="rut" name="rut" required>
+      <br>
+      <label for="nombres">Nombres:</label>
+      <input type="text" id="nombres" name="nombres" required>
+      <br>
+      <label for="apellidos">Apellidos:</label>
+      <input type="text" id="apellidos" name="apellidos" required>
+      <br>
+      <label for="direccion">Dirección:</label>
+      <input type="text" id="direccion" name="direccion">
+      <br>
+      <label for="ciudad">Ciudad:</label>
+      <input type="text" id="ciudad" name="ciudad">
+      <br>
+      <label for="telefono">Teléfono:</label>
+      <input type="text" id="telefono" name="telefono">
+      <br>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email">
+      <br>
+      <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+      <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+      <br>
+      <label for="estado_civil">Estado Civil:</label>
+      <select id="estado_civil" name="estado_civil">
+        <option value="">Seleccione...</option>
+        <option value="soltero">Soltero</option>
+        <option value="casado">Casado</option>
+        <option value="viudo">Viudo</option>
+      </select>
+      <br>
+      <label for="comentarios">Comentarios:</label>
+      <textarea id="comentarios" name="comentarios"></textarea>
+      <br>
+      <button type="button" onclick="guardarRegistro()">Guardar</button>
+      <button type="reset">Limpiar</button>
+      <button type="button" onclick="location.href='index.php'">Cerrar</button>
+    </form>
+  </div>
+
+  <div id="resultadosBusqueda"></div>
+
+  <script>
+    var fichasMedicas = [];
+    // guardar un registro nuevo
+    function guardarRegistro() {
+      var rut = document.getElementById("rut").value;
+      var nombres = document.getElementById("nombres").value;
+      var apellidos = document.getElementById("apellidos").value;
+      var direccion = document.getElementById("direccion").value;
+      var ciudad = document.getElementById("ciudad").value;
+      var telefono = document.getElementById("telefono").value;
+      var email = document.getElementById("email").value;
+      var fechaNacimiento = document.getElementById("fecha_nacimiento").value;
+      var estadoCivil = document.getElementById("estado_civil").value;
+      var comentarios = document.getElementById("comentarios").value;
+      var indiceExistente = fichasMedicas.findIndex(function(ficha) {
+        return ficha.apellidos === apellidos;
+      });
+      if (indiceExistente !== -1) {
+        if (confirm("El registro ya existe. ¿Desea sobrescribirlo?")) {
+          fichasMedicas[indiceExistente] = {
+            rut: rut,
+            nombres: nombres,
+            apellidos: apellidos,
+            direccion: direccion,
+            ciudad: ciudad,
+            telefono: telefono,
+            email: email,
+            fechaNacimiento: fechaNacimiento,
+            estadoCivil: estadoCivil,
+            comentarios: comentarios
+          };
+        }
+      } else {
+        fichasMedicas.push({
+          rut: rut,
+          nombres: nombres,
+          apellidos: apellidos,
+          direccion: direccion,
+          ciudad: ciudad,
+          telefono: telefono,
+          email: email,
+          fechaNacimiento: fechaNacimiento,
+          estadoCivil: estadoCivil,
+          comentarios: comentarios
+        });
+      }
+  
+      // Limpiar el formulario
+      document.querySelector("#formulario form").reset();
+    }
+  
+//buscar por apellido y mostrar los resultados en una ventana nueva pestaña
+function buscarPorApellido() {
+  var apellidoBuscado = document.getElementById("buscarApellido").value;
+  var resultados = fichasMedicas.filter(function(ficha) {
+    return ficha.apellidos.toLowerCase().includes(apellidoBuscado.toLowerCase());
+  });
+
+  //HTML para los resultados
+  var resultadosHTML = "<h2>Resultados de la búsqueda:</h2>";
+  if (resultados.length > 0) {
+    resultados.forEach(function(resultado) {
+      resultadosHTML += "<p>Nombre: " + resultado.nombres + " " + resultado.apellidos + "</p>";
+      resultadosHTML += "<p>Email: " + resultado.email + "</p>";
+      resultadosHTML += "<hr>";
+    });
+  } else {
+    resultadosHTML = "<p>No se encontraron resultados para el apellido buscado.</p>";
+  }
+  var ventanaEmergente = window.open('', '_blank');
+  ventanaEmergente.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Resultados de Búsqueda</title></head><body>' + resultadosHTML + '</body></html>');
+}
+    document.querySelector("#formulario form").addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevenir el envío predeterminado del formulario
+      guardarRegistro();
+    });
+  </script>
+</body>
+</html>
